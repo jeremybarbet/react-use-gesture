@@ -1,4 +1,4 @@
-import { MouseEventHandler, PointerEventHandler, UIEventHandler, WheelEventHandler, TouchEventHandler } from 'react'
+import { MouseEventHandler, PointerEventHandler, UIEventHandler, WheelEventHandler, TouchEventHandler, DragEventHandler } from 'react'
 import { TransformType, Fn } from './common.d'
 
 export enum GestureFlag {
@@ -65,6 +65,14 @@ export interface ReactEventHandlers {
   // Wheel Events
   onWheel?: WheelEventHandler
   onWheelCapture?: WheelEventHandler
+
+  // Drag Events
+  onDrag?: DragEventHandler
+  onDragCapture?: DragEventHandler
+  onDragEnd?: DragEventHandler
+  onDragEnterCapture?: DragEventHandler
+  onDragStart?: DragEventHandler
+  onDragStartCapture?: DragEventHandler
 
   // Cheat mode for Gesture Events
   onGestureStart?: Fn

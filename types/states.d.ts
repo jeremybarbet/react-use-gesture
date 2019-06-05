@@ -1,8 +1,8 @@
 import { Vector2, TransformType, Omit } from './common.d'
 import { TransformedEvent } from './events.d'
 
-export type GestureKey = 'drag' | 'pinch' | 'move' | 'scroll' | 'wheel' | 'hover'
-export type StateKey = Exclude<GestureKey, 'hover'>
+export type GestureKey = 'drag' | 'pinch' | 'move' | 'scroll' | 'wheel' | 'hover' | 'dnd'
+export type StateKey = Exclude<GestureKey, 'hover' | 'dnd'>
 
 export interface SharedGestureState {
   hovering: boolean

@@ -17,6 +17,7 @@ import { defaultConfig, initialState, mappedKeys } from '../defaults'
 import { addListeners, removeListeners, supportsGestureEvent, chainFns } from '../utils'
 
 import DragRecognizer from '../recognizers/DragRecognizer'
+import DndRecognizer from '../recognizers/DndRecognizer'
 import ScrollRecognizer from '../recognizers/ScrollRecognizer'
 import WheelRecognizer from '../recognizers/WheelRecognizer'
 import MoveRecognizer from '../recognizers/MoveRecognizer'
@@ -218,13 +219,17 @@ export default class GestureController<BinderType extends ReactEventHandlers | F
    * to the react component they want to interact with
    */
   private getBindings = (): ReactEventHandlers => {
-    const output: ReactEventHandlers = {}
+    const output: ReactEventHandlers & { draggable?: boolean } = {}
     const captureString = this.config.event.capture ? 'Capture' : ''
 
     Object.entries(this.bindings).forEach(([event, fns]) => {
       const key = (event + captureString) as ReactEventHandlerKey
       output[key] = chainFns(...(<Fn[]>fns))
     })
+
+    if (this.handlers.onDnd) {
+      output.draggable = true
+    }
 
     return output
   }
@@ -249,6 +254,9 @@ export default class GestureController<BinderType extends ReactEventHandlers | F
 
     if (actions.has('onDrag')) {
       this.addRecognizer(new DragRecognizer(this, args))
+    }
+    if (actions.has('onDnd')) {
+      this.addRecognizer(new DndRecognizer(this, args))
     }
     if (actions.has('onScroll')) {
       this.addRecognizer(new ScrollRecognizer(this, args))

@@ -11,6 +11,7 @@ export interface GestureConfig {
   transform: TransformType
   enabled: boolean
   drag: boolean
+  dnd: boolean
   pinch: boolean
   scroll: boolean
   wheel: boolean

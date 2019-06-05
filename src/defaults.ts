@@ -17,6 +17,7 @@ export const mappedKeys: MappedKeys = {
   scroll: { stateKey: 'scroll', handlerKey: 'onScroll' },
   wheel: { stateKey: 'wheel', handlerKey: 'onWheel' },
   hover: { stateKey: 'move', handlerKey: 'onHover' },
+  dnd: { stateKey: 'drag', handlerKey: 'onDnd' },
 }
 
 // default config (will extend user config)
@@ -28,6 +29,7 @@ export const defaultConfig: GestureConfig = {
   transform: { x: (x: number): number => x, y: (y: number): number => y },
   enabled: true,
   drag: true,
+  dnd: true,
   pinch: true,
   scroll: true,
   wheel: true,
