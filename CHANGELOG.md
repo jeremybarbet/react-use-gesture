@@ -1,5 +1,13 @@
 # Changelog
 
+## 5.2.0 Release
+
+**Summary:** Adds a time threshold before triggering drag. This can be useful to differentiate from clicks.
+
+### Added
+
+1. `time` parameter in config that specifies a time threshold before triggering a drag.
+
 ## 5.1.2 Release
 
 **Summary:** Minor release fixing TypeScript export.

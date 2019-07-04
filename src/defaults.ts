@@ -26,6 +26,7 @@ export const defaultConfig: GestureConfig = {
   pointerEvents: false,
   window: typeof window !== 'undefined' ? window : undefined,
   transform: { x: (x: number): number => x, y: (y: number): number => y },
+  time: 100,
   enabled: true,
   drag: true,
   pinch: true,

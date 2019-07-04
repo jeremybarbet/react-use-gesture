@@ -1,3 +1,4 @@
+import { PointerEvent, TouchEvent } from 'react'
 import CoordinatesRecognizer from './CoordinatesRecognizer'
 import { noop, getPointerEventData } from '../utils'
 import GestureController from '../controllers/GestureController'
@@ -12,10 +13,11 @@ export default class DragRecognizer extends CoordinatesRecognizer {
 
   onStart = (event: TransformedEvent): void => {
     if (!this.isEnabled()) return
+    event.persist()
 
-    const { values, ...rest } = getPointerEventData(event)
     // making sure we're not dragging the element when more than one finger press the screen
-    if (rest.touches > 1) return
+    const { touches } = event as TouchEvent
+    if (touches && touches.length > 1) return
 
     const { currentTarget, pointerId } = event as PointerEvent
     if (this.pointerEventsEnabled()) {
@@ -33,6 +35,13 @@ export default class DragRecognizer extends CoordinatesRecognizer {
       this.addWindowListeners(dragListeners)
     }
 
+    this.setTimeout(() => this.triggerStart(event), this.controller.config.time)
+  }
+
+  triggerStart = (event: TransformedEvent): void => {
+    const { values, ...rest } = getPointerEventData(event)
+    const { currentTarget, pointerId } = event as PointerEvent
+
     const startState = this.getStartState(values, event)
 
     this.updateState(
@@ -43,10 +52,20 @@ export default class DragRecognizer extends CoordinatesRecognizer {
   }
 
   onChange = (event: TransformedEvent): void => {
+    this.clearTimeout()
     const { canceled, active } = this.getState()
-    if (canceled || !active) return
+    if (canceled) return
 
     const { values, ...rest } = getPointerEventData(event)
+
+    // gesture is not active but pointer is moving and button is pressed
+    // this can happen when the timeout hasn't been reached
+    if (!active) {
+      if (rest.buttons || rest.touches) {
+        this.triggerStart(event)
+      }
+      return
+    }
 
     if (rest.buttons === 0 && rest.touches === 0) {
       this.onEnd(event)
@@ -60,12 +79,13 @@ export default class DragRecognizer extends CoordinatesRecognizer {
   }
 
   onEnd = (event: TransformedEvent): void => {
+    this.clearTimeout()
     const state = this.getState()
-    if (!state.active) return
-
     const { currentTarget, pointerId } = state
     if (currentTarget && this.pointerEventsEnabled()) (currentTarget as any).releasePointerCapture(pointerId)
     else this.removeWindowListeners()
+
+    if (!state.active) return
 
     this.updateState({ dragging: false, down: false, buttons: 0, touches: 0 }, { ...genericEndState, event }, GestureFlag.OnEnd)
   }
@@ -79,6 +99,6 @@ export default class DragRecognizer extends CoordinatesRecognizer {
     if (this.pointerEventsEnabled()) {
       return [['onPointerDown', this.onStart], ['onPointerMove', this.onChange], [['onPointerUp', 'onPointerCancel'], this.onEnd]]
     }
-    return [[['onMouseDown', 'onTouchStart'], this.onStart]]
+    return [[['onMouseDown', 'onTouchStart'], this.onStart], [['onMouseUp', 'onTouchEnd', 'onTouchCancel'], this.onEnd]]
   }
 }

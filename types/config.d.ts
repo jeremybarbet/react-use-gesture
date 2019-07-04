@@ -9,6 +9,7 @@ export interface GestureConfig {
   window?: EventTarget | null
   pointerEvents: boolean
   transform: TransformType
+  time: number
   enabled: boolean
   drag: boolean
   pinch: boolean
